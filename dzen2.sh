@@ -23,7 +23,16 @@ getupdates() {
 updates=$(checkupdates | wc -l)
 aur=$(aur repo -S -u -d revenge_repo | wc -l)
 }
-
+wmcheck() {
+top=$(wmctrl -m | grep Name: | awk '{ print $2 }')
+if [ "$top" = "Openbox" ]
+then openboxworkspace
+else getworkspace
+fi
+}
+openboxworkspace() {
+	space=$(wmctrl -ld | grep "*" | tail -1 | awk '{print $10 }')
+}
 getworkspace() {
 space=$(wmctrl -ld | grep "*" | tail -1 | awk '{print $9 }')
 }
@@ -45,7 +54,7 @@ output() {
 	getpower
 	getvolume
 	getmem
-	getworkspace
+	wmcheck
 	getnetwork
 	getbrightness
 echo " $space   |   $time | $power | $volume | $bright | $memused / $memtotal | $wifi"	
