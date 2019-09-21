@@ -4,7 +4,7 @@ time=$(date +'%a %b %d %H:%M:%S')
 }
 
 getpower() {
-power=$(upower -i /org/freedesktop/UPower/devices/battery_BAT1 | grep percentage | tail -1 | awk '{print $2 }')
+power=$(acpi | awk '{print $4}' | sed 's/,//g')
 }
 getvolume() {
 volume=$(pamixer --get-volume-human)
@@ -23,6 +23,7 @@ getupdates() {
 updates=$(checkupdates | wc -l)
 aur=$(aur repo -S -u -d revenge_repo | wc -l)
 }
+
 wmcheck() {
 top=$(wmctrl -m | grep Name: | awk '{ print $2 }')
 if [ "$top" = "Openbox" ]
@@ -62,13 +63,15 @@ output() {
 	getnetwork
 	getbrightness
 	openwindows
-echo " $space | $windows | $time | $power | $volume | $bright | $memused / $memtotal | $wifi"	
+echo " $space | $windows | $time | $power | $volume | $bright | $memused / $memtotal | $updates $aur | $wifi"	
 	sleep 1
 	done
 }
 bar() {
 while true;
-do output | dzen2
+do 
+getupdates
+output | dzen2
 sleep 1
 done
 }
