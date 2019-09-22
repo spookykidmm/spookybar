@@ -12,4 +12,10 @@ pamixer
 
 light
 
-upower
+acpi
+
+wireless_tools
+
+aurutils
+
+wmctrl
