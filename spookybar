@@ -4,7 +4,7 @@ time=$(date +'%a %b %d %H:%M:%S')
 }
 
 getpower() {
-power=$(acpi | awk '{print $4}' | sed 's/,//g')
+power=$(acpi | awk '{print $4 " " $3}' | sed 's/,//g')
 }
 getvolume() {
 volume=$(pamixer --get-volume-human)
@@ -33,7 +33,7 @@ fi
 }
 
 openwindows() {
-	windows=$(echo $(wmctrl -l | awk '{print $2 " " $4}'))
+	windows=$(echo $(wmctrl -l | awk '{print $2+1 " " $4}'))
 }
 openboxworkspace() {
 	space=$(wmctrl -ld | grep "*" | tail -1 | awk '{print $10 }')
@@ -63,7 +63,7 @@ output() {
 	getnetwork
 	getbrightness
 	openwindows
-echo " $space | $windows | $time | $power | $volume | $bright | $memused / $memtotal | $updates $aur | $wifi"	
+echo " $space | $windows | $time | $power | ☊: $volume | ☀: $bright% | $memused / $memtotal | $updates $aur | $wifi"	
 	sleep 1
 	done
 }
