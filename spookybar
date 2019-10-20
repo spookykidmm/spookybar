@@ -20,7 +20,12 @@ memtotal=$(free -m | grep Mem: | tail -1 | awk '{print $2 }')
 }
 
 getupdates() {
-updates=$(checkupdates | wc -l)
+detectos=$(lsb_release -d | awk '{print $2 $3}')
+if [ "$detectos" = "ArchLinux" ]
+then updates=$(checkupdates | wc -l)
+elif [ "$detectos" = "VoidLinux" ]
+then updates=$(fakeroot xbps-install -Sun mate | wc -l)
+fi
 aur=$(aur repo -S -u -d revenge_repo | wc -l)
 }
 
@@ -63,7 +68,7 @@ output() {
 	getnetwork
 	getbrightness
 	openwindows
-echo " $space | $windows | $time | $power | ☊: $volume | ☀: $bright% | $memused / $memtotal | $updates $aur | $wifi"	
+echo " $space | $windows | $time | $power | ☊: $volume | ☀: $bright% | $memused / $memtotal | $updates | $wifi"	
 	sleep 1
 	done
 }
