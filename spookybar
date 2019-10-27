@@ -38,7 +38,7 @@ fi
 }
 
 openwindows() {
-	windows=$(echo $(wmctrl -l | awk '{print $2+1 " " $4}'))
+	windows=$(echo $(wmctrl -l | awk '{print $2+1 " " $4}' | sort))
 }
 openboxworkspace() {
 	space=$(wmctrl -ld | grep "*" | tail -1 | awk '{print $10 }')
