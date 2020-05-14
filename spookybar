@@ -1,17 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 gettime() {
 time=$(date +'%a %b %d %H:%M:%S')
 }
 
 getpower() {
-power=$(acpi | awk '{print $4 " " $3}' | sed 's/,//g')
+batt=$(acpi | awk '{print $4 " " $3}' | sed 's/,//g')
+if batt="No support for device type: power_supply"
+then power="It's over 9000!"
+else power=$batt
+fi
 }
 getvolume() {
 volume=$(pamixer --get-volume-human)
 }
 
 getbrightness() {
-	bright=$(light -G)
+    bltest=$(ls /sys/class/backlight/)
+    if [ "$bltest" = "" ]
+    then status=$(xrandr --current --verbose | grep Brightness | awk '{print $2}')
+		 bright=$(calc $status*100 | awk '{print $1}')
+	else bright=$(light -G)
+	fi
 }
 
 getmem() {
@@ -38,7 +47,7 @@ fi
 }
 
 openwindows() {
-	windows=$(echo $(wmctrl -l | awk '{print $2+1 " " $4}' | sort))
+	windows=$(echo $(wmctrl -l | awk '{print $2+1 " " $4}' | sort -g))
 }
 openboxworkspace() {
 	space=$(wmctrl -ld | grep "*" | tail -1 | awk '{print $10 }')
@@ -56,7 +65,13 @@ while true;
       
 getnetwork() {
 	wifi=$(iwgetid -r)
+	if [ $wifi != "" ]
+	then
+	network=$wifi
+    else network=$(curl ipinfo.io/ip)
+    fi
 }
+
 output() {
 	while true;
 	do
@@ -68,7 +83,7 @@ output() {
 	getnetwork
 	getbrightness
 	openwindows
-echo " $space | $windows | $time | $power | ☊: $volume | ☀: $bright% | $memused / $memtotal | $updates | $wifi"	
+echo " $space | $windows | $time | $power | ☊: $volume | ☀: $bright% | $memused / $memtotal | $updates | $network"	
 	sleep 1
 	done
 }
