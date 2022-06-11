@@ -1,6 +1,6 @@
 #!/bin/sh
 gettime() {
-time=$(date +'%a %b %d %H:%M')
+time=$(date +'%a %b %d %H:%M:%S')
 }
 
 getpower() {
@@ -35,6 +35,7 @@ then updates=$(checkupdates | wc -l)
 elif [ "$detectos" = "VoidLinux" ]
 then updates=$(fakeroot xbps-install -Sun | wc -l)
 fi
+aur=$(aur repo -S -u -d revenge_repo | wc -l)
 }
 
 wmcheck() {
@@ -48,13 +49,18 @@ fi
 openwindows() {
 	windows=$(echo $(wmctrl -l | awk '{print $2+1 " " $4}' | sort -g))
 }
-
 openboxworkspace() {
 	space=$(wmctrl -ld | grep "*" | tail -1 | awk '{print $10 }')
 }
-
 getworkspace() {
 space=$(wmctrl -ld | grep "*" | tail -1 | awk '{print $9 }')
+}
+
+updatecheck() {
+while true;
+      do getupdates
+      sleep 5
+      done
 }
       
 getnetwork() {
@@ -73,10 +79,11 @@ output() {
 	getpower
 	getvolume
 	getmem
+	wmcheck
 	getnetwork
 	getbrightness
 	openwindows
-echo -e " $space | $windows | $time | $power | Vol: $volume | Bri: $bright% | $memused / $memtotal | $updates | $network"	
+echo " $space | $windows | $time | $power | Vol: $volume | Bri: $bright% | $memused / $memtotal | $updates | $network"	
 	sleep 1
 	done
 }
@@ -89,6 +96,4 @@ sleep 1
 done
 }
 #updatecheck
-wmcheck
 bar
-
